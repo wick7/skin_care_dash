@@ -1,0 +1,14 @@
+.paginationContainer {
+  list-style-type: none;
+  display: flex;
+  flex-direction: row;
+}
+
+.numbers {
+  margin: 0 5px;
+}
+
+.footerPagination {
+  width: 100%;
+  text-align: right;
+}
