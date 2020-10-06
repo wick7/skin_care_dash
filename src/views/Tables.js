@@ -27,7 +27,7 @@ const Tables = () => {
       const result = await axios(`http://localhost:3001/api?search=${search}&page=${parseInt(page)}`);
 
       setData(result.data.results);
-      setCount(result.data.count)
+      setCount(result.data.count / 10)
     };
 
     fetchData();

@@ -11,7 +11,7 @@ const AddNewPost = () => (
 
     {/* Page Header */}
     <Row noGutters className="page-header py-4">
-      <PageTitle sm="4" title="Add New Product" subtitle="Blog Posts" className="text-sm-left" />
+      <PageTitle sm="4" title="Add New Product" subtitle="Products" className="text-sm-left" />
     </Row>
 
     <Row>

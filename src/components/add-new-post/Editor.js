@@ -1,5 +1,6 @@
 import React, { useState, useReducer } from "react";
-import classNames from "classnames";
+import axios from 'axios'
+
 import {
   Card, CardBody, DatePicker, Form, FormInput, FormTextarea, FormFeedback, FormSelect, FormCheckbox, Row, Col, Button, Alert, InputGroup,
   InputGroupAddon,
@@ -7,14 +8,15 @@ import {
 
 } from "shards-react";
 
-import RangeDatePicker from "../common/RangeDatePicker";
-
 import "react-quill/dist/quill.snow.css";
 import "../../assets/quill.css";
 
 const Editor = () => {
   const [formAlert, setFormAlert] = useState(false)
+  const [formSuccess, setFormSuccess] = useState(false)
+  const [formFailure, setFormFailure] = useState(false)
   const [repurchaseItemConfirm, setRepurchaseItemConfirm] = useState(false)
+
   const [inputFields, setInputFields] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     {
@@ -25,14 +27,17 @@ const Editor = () => {
       price_per_oz: '',
       category: '',
       quantity: 0,
-      date_purchased: '',
-      date_opened: '',
-      date_finished: '',
+      date_purchased: null,
+      date_opened: null,
+      date_finished: null,
       repurchase: false,
       notes: ''
     })
 
-  const handleChange = evt => {
+  let priceOzCaluation = inputFields.oz_size / inputFields.price_paid
+  let pricePerOz = Number.isNaN(priceOzCaluation) ? '' : priceOzCaluation.toFixed(2)
+
+  const handleChange = (evt) => {
     console.log(evt)
     const name = evt.target.name;
     const newValue = evt.target.value;
@@ -40,12 +45,39 @@ const Editor = () => {
     setInputFields({ [name]: newValue });
   }
 
+  const fetchData = async (body) => {
+    let newBody = JSON.stringify(body)
+    console.log(newBody)
+    axios.post(`http://localhost:3001/api/insert`, newBody, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then((response) => {
+      console.log(response);
+      setFormSuccess(true)
+    })
+      .catch((error) => {
+        console.log(error);
+        setFormFailure(false)
+      });
+
+  };
+
   const handleOnSubmit = () => {
     if (inputFields.oz_size === '' || inputFields.price_paid === '') {
       setFormAlert(true)
     } else {
+      inputFields.price_per_oz = parseInt(pricePerOz)
+      inputFields.oz_size = parseInt(inputFields.oz_size)
+      inputFields.price_paid = parseInt(inputFields.price_paid)
+      inputFields.quantity = parseInt(inputFields.quantity)
+      inputFields.category = parseInt(inputFields.category)
+
       console.log('Submitted to API')
       console.log(inputFields)
+      fetchData(inputFields)
+
+
       setFormAlert(false)
       setRepurchaseItemConfirm(false)
       setInputFields({
@@ -53,12 +85,12 @@ const Editor = () => {
         brand: '',
         oz_size: '',
         price_paid: '',
-        price_per_oz: undefined === this ? '' : this.oz_size / this.price_paid,
+        price_per_oz: '',
         category: '',
         quantity: 0,
-        date_purchased: '',
-        date_opened: '',
-        date_finished: '',
+        date_purchased: null,
+        date_opened: null,
+        date_finished: null,
         repurchase: false,
         notes: ''
       })
@@ -67,23 +99,26 @@ const Editor = () => {
   }
 
   const handleStartDateChange = (value) => {
+    const date = value.toLocaleDateString("fr-CA")
     setInputFields({
       ...value,
-      ...{ date_purchased: new Date(value) }
+      ...{ date_purchased: date }
     });
   }
 
   const handleOpenDateChange = (value) => {
+    const date = value.toLocaleDateString("fr-CA")
     setInputFields({
       ...value,
-      ...{ date_opened: new Date(value) }
+      ...{ date_opened: date }
     });
   }
 
   const handleEndDateChange = (value) => {
+    const date = value.toLocaleDateString("fr-CA")
     setInputFields({
       ...value,
-      ...{ date_finished: new Date(value) }
+      ...{ date_finished: date }
     });
   }
 
@@ -110,7 +145,6 @@ const Editor = () => {
     { id: 12, category_name: 'Body' },
   ]
 
-  let pricePerOz = inputFields.oz_size / inputFields.price_paid
 
   return (
     <Card small className="mb-3">
@@ -171,10 +205,9 @@ const Editor = () => {
               <label>Price Per OZ</label>
               <FormInput
                 name="price_per_oz"
-                value={Number.isNaN(pricePerOz) ? '' : pricePerOz.toFixed(2)}
+                value={pricePerOz}
                 number
                 placeholder="Price Per OZ"
-                onChange={handleChange}
                 disabled
               />
             </Col>
@@ -182,17 +215,17 @@ const Editor = () => {
           <Row form>
             <Col md="6" className="form-group">
               <label>Category</label>
-              <FormSelect>
+              <FormSelect name="category" onChange={handleChange}>
                 {categoryItems.map((value, index) => {
-                  return <option id={value.id} name="category" onSelect={handleChange}>{value.category_name}</option>
+                  return <option id={value.id} value={index}>{value.category_name}</option>
                 })}
               </FormSelect>
             </Col>
             <Col md="6">
               <label>Quantity</label>
-              <FormSelect>
+              <FormSelect name="quantity" onChange={handleChange}>
                 {quanityItems.map((value, index) => {
-                  return <option id={index + 'q'} name="quantity" onSelect={handleChange}>{index + 1}</option>
+                  return <option id={index + 'q'}>{index + 1}</option>
                 })}
               </FormSelect>
             </Col>
@@ -268,6 +301,12 @@ const Editor = () => {
           <Alert className="mb-3" open={formAlert} theme="warning">
             Warning: Oz Size and Price Paid are required fields.
         </Alert>
+          <Alert open={formSuccess} theme="success">
+            Success! Product Added!
+          </Alert>
+          <Alert open={formFailure} theme="danger">
+            Failed! Product Not Added Please recheck your data!
+          </Alert>
         </Form>
       </CardBody>
     </Card>
