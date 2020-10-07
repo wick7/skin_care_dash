@@ -5,7 +5,6 @@ import {
   Card, CardBody, DatePicker, Form, FormInput, FormTextarea, FormFeedback, FormSelect, FormCheckbox, Row, Col, Button, Alert, InputGroup,
   InputGroupAddon,
   InputGroupText
-
 } from "shards-react";
 
 import "react-quill/dist/quill.snow.css";
@@ -25,7 +24,7 @@ const Editor = () => {
       oz_size: '',
       price_paid: '',
       price_per_oz: '',
-      category: '',
+      category: 1,
       quantity: 0,
       date_purchased: null,
       date_opened: null,
@@ -38,16 +37,14 @@ const Editor = () => {
   let pricePerOz = Number.isNaN(priceOzCaluation) ? '' : priceOzCaluation.toFixed(2)
 
   const handleChange = (evt) => {
-    console.log(evt)
     const name = evt.target.name;
     const newValue = evt.target.value;
-    console.log(name, newValue)
     setInputFields({ [name]: newValue });
   }
 
   const fetchData = async (body) => {
     let newBody = JSON.stringify(body)
-    console.log(newBody)
+
     axios.post(`http://localhost:3001/api/insert`, newBody, {
       headers: {
         'Content-Type': 'application/json'
@@ -58,7 +55,7 @@ const Editor = () => {
     })
       .catch((error) => {
         console.log(error);
-        setFormFailure(false)
+        setFormFailure(true)
       });
 
   };
@@ -66,6 +63,7 @@ const Editor = () => {
   const handleOnSubmit = () => {
     if (inputFields.oz_size === '' || inputFields.price_paid === '') {
       setFormAlert(true)
+      alertTimer()
     } else {
       inputFields.price_per_oz = parseInt(pricePerOz)
       inputFields.oz_size = parseInt(inputFields.oz_size)
@@ -73,12 +71,10 @@ const Editor = () => {
       inputFields.quantity = parseInt(inputFields.quantity)
       inputFields.category = parseInt(inputFields.category)
 
-      console.log('Submitted to API')
-      console.log(inputFields)
       fetchData(inputFields)
 
+      alertTimer()
 
-      setFormAlert(false)
       setRepurchaseItemConfirm(false)
       setInputFields({
         product_name: '',
@@ -86,7 +82,7 @@ const Editor = () => {
         oz_size: '',
         price_paid: '',
         price_per_oz: '',
-        category: '',
+        category: 1,
         quantity: 0,
         date_purchased: null,
         date_opened: null,
@@ -128,6 +124,15 @@ const Editor = () => {
       ...{ repurchase: !repurchaseItemConfirm }
     });
   }
+
+  const alertTimer = () => {
+    const timer = setTimeout(() => {
+      setFormSuccess(false)
+      setFormFailure(false)
+      setFormAlert(false)
+    }, 10000);
+    return () => clearTimeout(timer);
+  };
 
   const quanityItems = [1, 2, 3, 4, 5];
   const categoryItems = [
@@ -298,7 +303,7 @@ const Editor = () => {
             </Col>
           </Row>
           <Button theme="primary" onClick={handleOnSubmit}>Submit</Button>
-          <Alert className="mb-3" open={formAlert} theme="warning">
+          <Alert className="mb-3" open={formAlert} theme="warning" dismissible={false}>
             Warning: Oz Size and Price Paid are required fields.
         </Alert>
           <Alert open={formSuccess} theme="success">
