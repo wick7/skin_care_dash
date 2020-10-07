@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 import PageTitle from "../components/common/PageTitle";
 import ReactPaginate from 'react-paginate';
+import Search from "../components/components-overview/Search";
 
 import axios from 'axios'
 
@@ -57,6 +58,9 @@ const Tables = () => {
       <Row>
         <Col>
           <Card small className="mb-4">
+            <CardHeader className="border-bottom">
+              <Search />
+            </CardHeader>
             <CardHeader className="border-bottom">
               <h6 className="m-0">Products</h6>
             </CardHeader>

@@ -149,7 +149,7 @@ const Editor = () => {
   return (
     <Card small className="mb-3">
       <CardBody>
-        <Form className="add-new-post">
+        <Form className="add-new-product">
           <Row form>
             <Col md="6" className="form-group">
               <label>Product Name</label>
