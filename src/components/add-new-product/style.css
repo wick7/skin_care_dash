@@ -1,0 +1,10 @@
+.notes {
+  min-height: 200px;
+  margin: 15px 0;
+}
+
+.date-form {
+  display: flex;
+  flex-direction: row;
+  height: auto;
+}

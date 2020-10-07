@@ -1,0 +1,12 @@
+.submit {
+  margin: 0 15px;
+}
+
+.filter-sort-label {
+  margin: 10px 5px;
+}
+
+.filter-sort-flex {
+  display: flex;
+  flex-direction: column;
+}
