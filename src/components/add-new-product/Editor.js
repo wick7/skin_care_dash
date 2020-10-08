@@ -35,7 +35,7 @@ const Editor = () => {
 
   let priceOzCaluation = inputFields.oz_size / inputFields.price_paid
   let pricePerOz = Number.isNaN(priceOzCaluation) ? '' : priceOzCaluation.toFixed(2)
-
+  console.log(priceOzCaluation, pricePerOz)
   const handleChange = (evt) => {
     const name = evt.target.name;
     const newValue = evt.target.value;
@@ -65,7 +65,7 @@ const Editor = () => {
       setFormAlert(true)
       alertTimer()
     } else {
-      inputFields.price_per_oz = parseInt(pricePerOz)
+      inputFields.price_per_oz = parseFloat(pricePerOz)
       inputFields.oz_size = parseInt(inputFields.oz_size)
       inputFields.price_paid = parseInt(inputFields.price_paid)
       inputFields.quantity = parseInt(inputFields.quantity)
@@ -184,7 +184,7 @@ const Editor = () => {
                 name="oz_size"
                 value={inputFields.oz_size}
                 number
-                placeholder="Product Name"
+                placeholder="OZ Size"
                 onChange={handleChange}
                 required
                 invalid={formAlert}

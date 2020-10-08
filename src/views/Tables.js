@@ -95,7 +95,7 @@ const Tables = () => {
                         <td>{item.product_name}</td>
                         <td>{item.brand}</td>
                         <td>{item.quantity}</td>
-                        <td>{item.category}</td>
+                        <td>{item.category_name}</td>
                         <td>{item.price_paid}</td>
                         <td>{dateFormater(item.date_purchased)}</td>
                       </tr>
