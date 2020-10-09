@@ -218,7 +218,7 @@ const Editor = () => {
             </Col>
           </Row>
           <Row form>
-            <Col md="6" className="form-group">
+            <Col md="6" className="drop-downs">
               <label>Category</label>
               <FormSelect name="category" onChange={handleChange}>
                 {categoryItems.map((value, index) => {
@@ -226,7 +226,7 @@ const Editor = () => {
                 })}
               </FormSelect>
             </Col>
-            <Col md="6">
+            <Col md="6" className="drop-downs">
               <label>Quantity</label>
               <FormSelect name="quantity" onChange={handleChange}>
                 {quanityItems.map((value, index) => {
@@ -284,11 +284,6 @@ const Editor = () => {
               >
                 Click to Acknowledge Repurchase
               </FormCheckbox>
-            </Col>
-          </Row>
-          <Row form>
-            <Col md="6" className="form-group">
-
             </Col>
           </Row>
           <Row>
