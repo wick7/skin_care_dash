@@ -56,7 +56,7 @@ const Tables = () => {
     };
 
     fetchData();
-  }, [page, search]);
+  }, [page, search, modalStatus]);
   console.log(data)
 
   const handlePag = (e) => {
@@ -142,7 +142,6 @@ const Tables = () => {
                           nextLabel={'>'}
                         />
                       </PagFooter>
-
                     </td>
                   </tr>
                 </tfoot>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { Modal, ModalBody, ModalHeader, Button } from "shards-react";
 import styled from "styled-components";
 import axios from 'axios'
@@ -31,17 +31,30 @@ export default ({ modalStatus, handleDataModal, isModalBodySingleProduct, setIsM
       const result = await axios(`http://localhost:3001/api/${id}`);
 
       setSingleProductData(result.data[0])
+      console.log('handledEdit')
     };
     if (id) {
       fetchData()
     }
   }
+
+  // useEffect(() => {
+
+  // }, [singleProductData])
+
   return (
     <ModalContainer size="lg" open={modalStatus} toggle={handleDataModal}>
-      <ModalHeader>{isModalBodySingleProduct ? 'Product ' : 'Edit Product'}
+      <ModalHeader>
+        {/* Sets Modal Title */}
+        {isModalBodySingleProduct ? 'Product ' : 'Edit Product'}
+
+        {/* Sets Modal Button (Edit or Back) */}
         {isModalBodySingleProduct ? <Button theme="info" onClick={() => handleEdit(false, singleProductData.id)}>Edit</Button> : <BackButton onClick={() => handleEdit(true, singleProductData.id)}>{'  <<<--Back'}</BackButton>}
+
       </ModalHeader>
-      <ModalBodyConainter>{isModalBodySingleProduct ? <ProductInfo singleProductData={singleProductData} /> : <Editor />}</ModalBodyConainter>
+      <ModalBodyConainter>
+        {isModalBodySingleProduct ? <ProductInfo singleProductData={singleProductData} /> : <Editor singleProductData={singleProductData} handleEdit={handleEdit} setSingleProductData={setSingleProductData} />}
+      </ModalBodyConainter>
     </ModalContainer>
   )
 }

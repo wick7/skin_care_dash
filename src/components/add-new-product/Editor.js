@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from "react";
+import React, { useState, useReducer, useEffect } from "react";
 import axios from 'axios'
 
 import {
@@ -10,32 +10,44 @@ import {
 import "react-quill/dist/quill.snow.css";
 import "../../assets/quill.css";
 
-const Editor = () => {
+const Editor = ({ singleProductData, handleEdit, setSingleProductData }) => {
   const [formAlert, setFormAlert] = useState(false)
   const [formSuccess, setFormSuccess] = useState(false)
   const [formFailure, setFormFailure] = useState(false)
   const [repurchaseItemConfirm, setRepurchaseItemConfirm] = useState(false)
 
+  const dateFormater = (dataDate) => {
+    const event = new Date(dataDate);
+    const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
+
+    return dataDate ? null : event.toLocaleDateString('fr-CA', options)
+  }
+
   const [inputFields, setInputFields] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     {
-      product_name: '',
-      brand: '',
-      oz_size: '',
-      price_paid: '',
-      price_per_oz: '',
-      category: 1,
-      quantity: 0,
-      date_purchased: null,
-      date_opened: null,
-      date_finished: null,
-      repurchase: false,
-      notes: ''
+      product_name: singleProductData ? singleProductData.product_name : '',
+      brand: singleProductData ? singleProductData.brand : '',
+      oz_size: singleProductData ? singleProductData.oz_size : '',
+      price_paid: singleProductData ? singleProductData.price_paid : '',
+      price_per_oz: singleProductData ? singleProductData.price_per_oz : '',
+      category: singleProductData ? singleProductData.category : 1,
+      quantity: singleProductData ? singleProductData.quantity : 0,
+      date_purchased: singleProductData ? singleProductData.date_purchased : null,
+      date_opened: singleProductData ? singleProductData.date_opened : null,
+      date_finished: singleProductData ? singleProductData.date_finished : null,
+      repurchase: singleProductData ? singleProductData.repurchase : false,
+      notes: singleProductData ? singleProductData.notes : ''
     })
+
+  console.log(singleProductData ? 'from editor w/data' : 'from editor NO data')
+
 
   let priceOzCaluation = inputFields.oz_size / inputFields.price_paid
   let pricePerOz = Number.isNaN(priceOzCaluation) ? '' : priceOzCaluation.toFixed(2)
-  console.log(priceOzCaluation, pricePerOz)
+  console.log(inputFields)
+
+
   const handleChange = (evt) => {
     const name = evt.target.name;
     const newValue = evt.target.value;
@@ -57,7 +69,26 @@ const Editor = () => {
         console.log(error);
         setFormFailure(true)
       });
+  };
 
+  const updateProduct = async (body) => {
+    let newBody = JSON.stringify(body)
+
+    axios.put(`http://localhost:3001/api/update/${singleProductData.id}`, newBody, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept,Access-Control-Allow-Headers, Access-Control-Allow-Origin, Access-Control-Allow-Methods',
+        'Access-Control-Allow-Methods': 'PUT, GET, POST, PATCH, OPTIONS',
+      }
+    }).then((response) => {
+      console.log(response);
+      setFormSuccess(true)
+    })
+      .catch((error) => {
+        console.log(error);
+        setFormFailure(true)
+      });
   };
 
   const handleOnSubmit = () => {
@@ -70,8 +101,15 @@ const Editor = () => {
       inputFields.price_paid = parseInt(inputFields.price_paid)
       inputFields.quantity = parseInt(inputFields.quantity)
       inputFields.category = parseInt(inputFields.category)
+      inputFields.date_finished = dateFormater(inputFields.date_finished)
+      inputFields.date_opened = dateFormater(inputFields.date_opened)
+      inputFields.date_purchased = dateFormater(inputFields.date_purchased)
 
-      fetchData(inputFields)
+      console.log(singleProductData)
+      console.log(inputFields)
+
+      //API
+      singleProductData ? updateProduct(inputFields) : fetchData(inputFields)
 
       alertTimer()
 
@@ -90,6 +128,8 @@ const Editor = () => {
         repurchase: false,
         notes: ''
       })
+      handleEdit(true, null)
+      setSingleProductData(inputFields)
     }
 
   }

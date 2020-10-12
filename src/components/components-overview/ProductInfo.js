@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useReducer } from "react";
+import React, { useEffect, useState } from "react";
 import axios from 'axios'
 
 import { Card, CardBody, Row, Col } from "shards-react";
@@ -12,7 +12,6 @@ const ProductInfo = ({ singleProductData }) => {
   console.log('productinfo', singleProductData)
   useEffect(() => {
     // setData(singleProductData)
-
   }, [])
 
   const dateFormater = (dataDate) => {
@@ -26,9 +25,9 @@ const ProductInfo = ({ singleProductData }) => {
     product_name: singleProductData && singleProductData.product_name,
     brand_name: singleProductData && singleProductData.brand,
     category_name: singleProductData && singleProductData.category_name,
-    date_purchased: singleProductData && dateFormater(singleProductData.date_purchased),
-    date_opened: singleProductData && dateFormater(singleProductData.date_opened),
-    date_finished: singleProductData && dateFormater(singleProductData.date_finished),
+    date_purchased: singleProductData && singleProductData.date_purchased,
+    date_opened: singleProductData && singleProductData.date_opened,
+    date_finished: singleProductData && singleProductData.date_finished,
     repurchase: singleProductData && singleProductData.repurchase,
     oz_size: singleProductData && singleProductData.oz_size,
     quantity: singleProductData && singleProductData.quantity,
