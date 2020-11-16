@@ -24,6 +24,7 @@ yarn-error.log*
 .editorconfig
 
 #amplify
+/amplify
 amplify/team-provider-info.json
 amplify/\#current-cloud-backend
 amplify/.config/local-*
