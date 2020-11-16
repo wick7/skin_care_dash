@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, CardHeader, CardBody } from "shards-react";
+import { Container, Row, Col, Card, CardHeader, CardBody, Button } from "shards-react";
 import styled from "styled-components";
 
 import PageTitle from "../components/common/PageTitle";
 import ReactPaginate from 'react-paginate';
 import Search from "../components/components-overview/Search";
+import ModalEditor from "../components/components-overview/ModalEditor";
 
 import axios from 'axios'
 
@@ -16,12 +17,35 @@ const PagFooter = styled.div`
   flex-direction: column;
   align-items: flex-end;
 `
+const DataRow = styled.tr`
+&:hover {
+  background-color: #fbfbfb;
+}
+`
+
 
 const Tables = () => {
   const [data, setData] = useState([]);
   const [page, setPageNumber] = useState(1);
   const [count, setCount] = useState();
   const [search, setSearch] = useState('');
+  const [modalStatus, setModalStatus] = useState(false);
+  const [isModalBodySingleProduct, setIsModalBodySingleProduct] = useState(false);
+  const [singleProductData, setSingleProductData] = useState();
+
+  const handleDataModal = (isProduct, id) => {
+    setModalStatus(!modalStatus)
+    setIsModalBodySingleProduct(isProduct)
+    console.log(isProduct)
+    const fetchData = async () => {
+      const result = await axios(`http://localhost:3001/api/${id}`);
+
+      setSingleProductData(result.data[0])
+    };
+    if (id) {
+      fetchData()
+    }
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,7 +56,7 @@ const Tables = () => {
     };
 
     fetchData();
-  }, [page, search]);
+  }, [page, search, modalStatus]);
   console.log(data)
 
   const handlePag = (e) => {
@@ -49,6 +73,14 @@ const Tables = () => {
 
   return (
     <Container fluid className="main-content-container px-4">
+      <ModalEditor
+        modalStatus={modalStatus}
+        handleDataModal={handleDataModal}
+        isModalBodySingleProduct={isModalBodySingleProduct}
+        singleProductData={singleProductData}
+        setSingleProductData={setSingleProductData}
+        setIsModalBodySingleProduct={setIsModalBodySingleProduct}
+      />
       {/* Page Header */}
       <Row noGutters className="page-header py-4">
         <PageTitle sm="4" title="Purchased Products" subtitle="Purchased" className="text-sm-left" />
@@ -75,14 +107,9 @@ const Tables = () => {
                       Brand
                   </th>
                     <th scope="col" className="border-0">
-                      Quantity
-                  </th>
-                    <th scope="col" className="border-0">
                       Category
                   </th>
-                    <th scope="col" className="border-0">
-                      Price Paid
-                  </th>
+
                     <th scope="col" className="border-0">
                       Purchase Date
                   </th>
@@ -91,14 +118,12 @@ const Tables = () => {
                 <tbody>
                   {data.map(item => {
                     return (
-                      <tr>
+                      <DataRow onClick={() => handleDataModal(true, item.id)}>
                         <td>{item.product_name}</td>
                         <td>{item.brand}</td>
-                        <td>{item.quantity}</td>
-                        <td>{item.category}</td>
-                        <td>{item.price_paid}</td>
+                        <td>{item.category_name}</td>
                         <td>{dateFormater(item.date_purchased)}</td>
-                      </tr>
+                      </DataRow>
                     )
                   })}
                 </tbody>
@@ -117,13 +142,9 @@ const Tables = () => {
                           nextLabel={'>'}
                         />
                       </PagFooter>
-
                     </td>
                   </tr>
                 </tfoot>
-                <PagFooter>
-
-                </PagFooter>
               </table>
             </CardBody>
           </Card>

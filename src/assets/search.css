@@ -3,10 +3,14 @@
 }
 
 .filter-sort-label {
-  margin: 10px 5px;
+  margin: 5px 5px;
 }
 
 .filter-sort-flex {
   display: flex;
   flex-direction: column;
+}
+
+.drop-downs {
+  margin: 5px 0;
 }
